@@ -17,6 +17,7 @@ import Animated, {
 import { useNavigation, useRoute } from '@react-navigation/native'
 
 import { styles } from './styles'
+import { THEME } from '../../styles/theme'
 
 import { QUIZ } from '../../data/quiz'
 import { historyAdd } from '../../storage/quizHistoryStorage'
@@ -27,7 +28,7 @@ import { QuizHeader } from '../../components/QuizHeader'
 import { ConfirmButton } from '../../components/ConfirmButton'
 import { OutlineButton } from '../../components/OutlineButton'
 import { ProgressBar } from '../../components/ProgressBar'
-import { THEME } from '../../styles/theme'
+import { OverlayFeedback } from '../../components/OverlayFeedback'
 
 interface Params {
   id: string
@@ -38,6 +39,7 @@ const CARD_INCLINATION_FACTOR = 0.1
 const CARD_SKIP_AREA = -200
 
 export function Quiz() {
+  const [answerStatus, setAnswerStatus] = useState(0)
   const [points, setPoints] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -169,8 +171,10 @@ export function Quiz() {
     }
 
     if (quiz.questions[currentQuestion].correct === alternativeSelected) {
+      setAnswerStatus(1)
       setPoints((prevState) => prevState + 1)
     } else {
+      setAnswerStatus(2)
       shakeAnimation()
     }
 
@@ -213,6 +217,8 @@ export function Quiz() {
 
   return (
     <View style={styles.container}>
+      <OverlayFeedback status={answerStatus} />
+
       <Animated.View style={fixedProgressBarStyles}>
         <Text style={styles.title}>{quiz.title}</Text>
         <ProgressBar
