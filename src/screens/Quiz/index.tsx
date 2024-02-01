@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Alert, Text, View } from 'react-native'
+import { useCallback, useEffect, useState } from 'react'
+import { Alert, BackHandler, Text, View } from 'react-native'
 
 import { Audio } from 'expo-av'
 import * as Hapitics from 'expo-haptics'
@@ -201,7 +201,7 @@ export function Quiz() {
     setAlternativeSelected(null)
   }
 
-  function handleStop() {
+  const handleStop = useCallback(() => {
     Alert.alert('Parar', 'Deseja parar agora?', [
       {
         text: 'Não',
@@ -215,7 +215,7 @@ export function Quiz() {
     ])
 
     return true
-  }
+  }, [navigate])
 
   async function shakeAnimation() {
     await Hapitics.notificationAsync(Hapitics.NotificationFeedbackType.Error)
@@ -237,6 +237,15 @@ export function Quiz() {
     setQuiz(quizSelected)
     setIsLoading(false)
   }, [id])
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleStop,
+    )
+
+    return () => backHandler.remove()
+  }, [handleStop])
 
   if (isLoading) {
     return <Loading />
