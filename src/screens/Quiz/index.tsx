@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Alert, Text, View } from 'react-native'
 
 import { Audio } from 'expo-av'
+import * as Hapitics from 'expo-haptics'
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   Easing,
@@ -215,7 +217,9 @@ export function Quiz() {
     return true
   }
 
-  function shakeAnimation() {
+  async function shakeAnimation() {
+    await Hapitics.notificationAsync(Hapitics.NotificationFeedbackType.Error)
+
     shake.value = withSequence(
       withTiming(3, { duration: 400, easing: Easing.bounce }),
       withTiming(0, { duration: 400, easing: Easing.bounce }, (finished) => {
